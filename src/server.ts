@@ -3,6 +3,7 @@ import http, { IncomingMessage, Server, ServerResponse } from "http";
 const server: Server = http.createServer(
   (req: IncomingMessage, res: ServerResponse) => {
     console.log("Server is running...");
+    //welcome route
 
     if (req.url == "/" && req.method == "GET") {
       res.writeHead(200, { "content-type": "Application/json" });
@@ -12,6 +13,35 @@ const server: Server = http.createServer(
           path: req.url,
         })
       );
+    }
+    // health cheak point
+    if (req.url == "/api" && req.method == "GET") {
+      res.writeHead(200, { "content-type": "Application/json" });
+      res.end(
+        JSON.stringify({
+          message: "Helth status is OK",
+          path: req.url,
+        })
+      );
+    }
+    // create user route
+    if (req.url == "/api/users" && req.method == "POST") {
+      let body = "";
+      //listen for data chunks
+      req.on("data", (chunk) => {
+        body += chunk.toString();
+      });
+      req.on("end", () => {
+        try {
+          const parseBody = JSON.parse(body);
+          console.log(parseBody);
+          console.log("Catching current cahnges");
+
+          res.end(JSON.stringify(parseBody));
+        } catch (err: any) {
+          console.log(err?.message);
+        }
+      });
     }
   }
 );
